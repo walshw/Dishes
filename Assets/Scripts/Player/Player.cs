@@ -10,7 +10,7 @@ public class Player : MonoBehaviour
     private Camera cam;
     private CharacterController characterController;
 
-    public bool frozen;
+    public Washing washingDishes;
 
     void Start()
     {
@@ -21,9 +21,13 @@ public class Player : MonoBehaviour
 
     void Update()
     {
-        if (frozen)
+        if (washingDishes)
         {
-            // 🥶
+            if (Input.GetKeyDown(KeyCode.E))
+            {
+                washingDishes.StopWashing();
+                washingDishes = null;
+            }
             return;
         }
 
@@ -39,11 +43,10 @@ public class Player : MonoBehaviour
             Ray ray = cam.ScreenPointToRay(new Vector3(Screen.width / 2, Screen.width / 2, 0));
             if (Physics.Raycast(ray, out RaycastHit hit, 3f, LayerMask.GetMask("Usage")))
             {
-                Washing w = hit.transform.gameObject.GetComponentInParent<Washing>();
-                if (w != null)
+                washingDishes = hit.transform.gameObject.GetComponentInParent<Washing>();
+                if (washingDishes != null)
                 {
-                    w.BeginWashing(this);
-                    frozen = true;
+                    washingDishes.BeginWashing(this);
                 }
             }
         }

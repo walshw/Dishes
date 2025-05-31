@@ -15,6 +15,7 @@ public class Washing : MonoBehaviour
     private Player player;
     private Vector3 spongeDefaultPosition;
     private Quaternion spongeDefaultRotation;
+    private bool grimeSpawned;
 
     // Start is called before the first frame update
     void Start()
@@ -55,33 +56,36 @@ public class Washing : MonoBehaviour
     {
         player = p;
         Cursor.lockState = CursorLockMode.Confined;
-        p.transform.position = playerStandsHere.position;
-        p.transform.rotation = Quaternion.LookRotation(-transform.right);
+        p.transform.SetPositionAndRotation(playerStandsHere.position, Quaternion.LookRotation(-transform.right));
         p.head.transform.rotation = new Quaternion();
 
-        for (int i = 0; i < 1000; i++)
+        if (!grimeSpawned)
         {
-            GameObject grimule = Instantiate(grimePrefab, dish);
-            float radius = dishModelCollider.bounds.extents.x;
-            float randX = Random.Range(-dishModelCollider.bounds.extents.x, dishModelCollider.bounds.extents.x);
-            float zRange = Mathf.Sqrt(Mathf.Pow(radius, 2) - Mathf.Pow(randX, 2));
-            float randZ = Random.Range(-zRange, zRange);
-            grimule.transform.localPosition = new Vector3(randX, 0f, randZ);
+            for (int i = 0; i < 1000; i++)
+            {
+                GameObject grimule = Instantiate(grimePrefab, dish);
+                float radius = dishModelCollider.bounds.extents.x;
+                float randX = Random.Range(-dishModelCollider.bounds.extents.x, dishModelCollider.bounds.extents.x);
+                float zRange = Mathf.Sqrt(Mathf.Pow(radius, 2) - Mathf.Pow(randX, 2));
+                float randZ = Random.Range(-zRange, zRange);
+                grimule.transform.localPosition = new Vector3(randX, 0f, randZ);
 
-            Grime g = grimule.GetComponent<Grime>();
-            g.decrementCount = DecrementGrime;
+                Grime g = grimule.GetComponent<Grime>();
+                g.decrementCount = DecrementGrime;
+            }
+
+            grimeCount = 1000;
+            grimeSpawned = true;
         }
-
-        grimeCount = 1000;
 
         playing = true;
     }
 
-    public void EndWashing()
+    public void StopWashing()
     {
         Cursor.lockState = CursorLockMode.Locked;
         playing = false;
-        player.frozen = false;
+        player.washingDishes = null;
         sponge.SetPositionAndRotation(spongeDefaultPosition, spongeDefaultRotation);
     }
 
@@ -89,7 +93,8 @@ public class Washing : MonoBehaviour
     {
         if (--grimeCount == 0)
         {
-            EndWashing();
+            grimeSpawned = false;
+            StopWashing();
         }
     }
 }
