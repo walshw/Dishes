@@ -1,12 +1,15 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using UnityEngine;
 
 public class Grime : MonoBehaviour
 {
     public float integrity = 100f;
     private Vector3 originalScale;
+
+    public Action decrementCount;
 
     // Start is called before the first frame update
     void Start()
@@ -25,6 +28,7 @@ public class Grime : MonoBehaviour
         integrity -= 10f;
         if (integrity <= 0)
         {
+            decrementCount();
             Destroy(gameObject);
         }
     }
