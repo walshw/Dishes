@@ -68,7 +68,7 @@ public class Washing : MonoBehaviour
                 float randX = Random.Range(-dishModelCollider.bounds.extents.x, dishModelCollider.bounds.extents.x);
                 float zRange = Mathf.Sqrt(Mathf.Pow(radius, 2) - Mathf.Pow(randX, 2));
                 float randZ = Random.Range(-zRange, zRange);
-                grimule.transform.localPosition = new Vector3(randX, 0f, randZ);
+                grimule.transform.localPosition = new Vector3(randX, 0.02f, randZ);
 
                 Grime g = grimule.GetComponent<Grime>();
                 g.decrementCount = DecrementGrime;
