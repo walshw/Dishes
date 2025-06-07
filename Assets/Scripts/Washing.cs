@@ -16,6 +16,7 @@ public class Washing : MonoBehaviour
     private Vector3 spongeDefaultPosition;
     private Quaternion spongeDefaultRotation;
     private bool grimeSpawned;
+    private bool spunchPickedUp;
 
     // Start is called before the first frame update
     void Start()
@@ -34,6 +35,16 @@ public class Washing : MonoBehaviour
             return;
         }
 
+        if (!spunchPickedUp)
+        {
+            if (Physics.Raycast(Camera.main.ScreenPointToRay(Input.mousePosition), 10f, LayerMask.GetMask("Sponge")) && Input.GetMouseButtonDown(0))
+            {
+                spunchPickedUp = true;
+                Cursor.visible = false;
+            }
+            return;
+        }
+
         // x 1. Sponge follows mouse
         // x 2. Sponge orients to dish on hover
         // x 3. Move over grime particles to destroy them
@@ -48,13 +59,14 @@ public class Washing : MonoBehaviour
         {
             sponge.transform.LookAt(Camera.main.transform.position, Vector3.up);
             sponge.transform.Rotate(90f, 0f, 0f);
-            sponge.position = Camera.main.ScreenToWorldPoint(new Vector3(mousePosition.x, mousePosition.y, 0.5f));
+            sponge.position = Camera.main.ScreenToWorldPoint(new Vector3(mousePosition.x, mousePosition.y, 1f));
         }
     }
 
     public void BeginWashing(Player p)
     {
         player = p;
+        Cursor.visible = true;
         Cursor.lockState = CursorLockMode.Confined;
         p.transform.SetPositionAndRotation(playerStandsHere.position, Quaternion.LookRotation(-transform.right));
         p.head.transform.rotation = new Quaternion();
@@ -86,6 +98,7 @@ public class Washing : MonoBehaviour
         Cursor.lockState = CursorLockMode.Locked;
         playing = false;
         player.washingDishes = null;
+        spunchPickedUp = false;
         sponge.SetPositionAndRotation(spongeDefaultPosition, spongeDefaultRotation);
     }
 
