@@ -669,6 +669,26 @@ PrefabInstance:
       propertyPath: m_LocalPosition.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 1738442558417681232, guid: 1fe095069a1b349498798f543ce8e56a, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 0.8558619
+      objectReference: {fileID: 0}
+    - target: {fileID: 1738442558417681232, guid: 1fe095069a1b349498798f543ce8e56a, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: -0.35451004
+      objectReference: {fileID: 0}
+    - target: {fileID: 1738442558417681232, guid: 1fe095069a1b349498798f543ce8e56a, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: -0.34792763
+      objectReference: {fileID: 0}
+    - target: {fileID: 1738442558417681232, guid: 1fe095069a1b349498798f543ce8e56a, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: -0.1441163
+      objectReference: {fileID: 0}
+    - target: {fileID: 1738442558417681232, guid: 1fe095069a1b349498798f543ce8e56a, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: -44.246
+      objectReference: {fileID: 0}
     - target: {fileID: 5717179643820922441, guid: 1fe095069a1b349498798f543ce8e56a, type: 3}
       propertyPath: m_LocalPosition.x
       value: 4.132
@@ -708,6 +728,22 @@ PrefabInstance:
     - target: {fileID: 5717179643820922441, guid: 1fe095069a1b349498798f543ce8e56a, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6243796603053425304, guid: 1fe095069a1b349498798f543ce8e56a, type: 3}
+      propertyPath: smoothTime
+      value: 0.1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6243796603053425304, guid: 1fe095069a1b349498798f543ce8e56a, type: 3}
+      propertyPath: spunchSpeed
+      value: 0.01
+      objectReference: {fileID: 0}
+    - target: {fileID: 6243796603053425304, guid: 1fe095069a1b349498798f543ce8e56a, type: 3}
+      propertyPath: spongeHoverOffset
+      value: 0.15
+      objectReference: {fileID: 0}
+    - target: {fileID: 6243796603053425304, guid: 1fe095069a1b349498798f543ce8e56a, type: 3}
+      propertyPath: spongeCleaningMoveSpeed
+      value: 0.02
       objectReference: {fileID: 0}
     - target: {fileID: 8151383188370511814, guid: 1fe095069a1b349498798f543ce8e56a, type: 3}
       propertyPath: m_Name

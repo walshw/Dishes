@@ -1,6 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 using UnityEngine;
 
 public class Washing : MonoBehaviour
@@ -11,23 +8,31 @@ public class Washing : MonoBehaviour
     public Transform playerStandsHere;
     public GameObject grimePrefab;
     public MeshCollider dishModelCollider;
+    public float spongeHoverOffset = 0.1f;
+    public int grimeToSpawn = 100;
+    public float spongeCleaningMoveSpeed = 0.02f;
     private int grimeCount;
     private Player player;
     private Vector3 spongeDefaultPosition;
     private Quaternion spongeDefaultRotation;
     private bool grimeSpawned;
     private bool spunchPickedUp;
+    private float timeHeld;
+    private bool mouseLockedToPlate;
+    private Vector3 plateworldPosition;
+    private Vector3 lastMousePosition;
+    public float smoothTime = 0.3f;
+    public float lookSpeed = 5f;
 
-    // Start is called before the first frame update
     void Start()
     {
         spongeDefaultPosition = sponge.transform.position;
         spongeDefaultRotation = sponge.transform.rotation;
         Cursor.visible = false;
         Cursor.lockState = CursorLockMode.Locked;
+        plateworldPosition = Vector3.zero;
     }
 
-    // Update is called once per frame
     void Update()
     {
         if (!playing)
@@ -41,19 +46,51 @@ public class Washing : MonoBehaviour
             {
                 spunchPickedUp = true;
                 Cursor.visible = false;
+                Cursor.lockState = CursorLockMode.Locked;
             }
             return;
         }
 
-        // x 1. Sponge follows mouse
-        // x 2. Sponge orients to dish on hover
-        // x 3. Move over grime particles to destroy them
-        Vector3 mousePosition = Input.mousePosition;
+        Vector3 mousePosition = new Vector3(lastMousePosition.x + Input.GetAxis("Mouse X") * lookSpeed, lastMousePosition.y + Input.GetAxis("Mouse Y") * lookSpeed, 0f);
+        mousePosition.x = Mathf.Clamp(mousePosition.x, 0, Screen.width);
+        mousePosition.y = Mathf.Clamp(mousePosition.y, 0, Screen.height);
+
+        lastMousePosition = mousePosition;
+
+        if (mouseLockedToPlate)
+        {
+            if (!Input.GetMouseButton(0))
+            {
+                mouseLockedToPlate = false;
+                timeHeld = 0f;
+                lastMousePosition = Camera.main.WorldToScreenPoint(sponge.position);
+                return;
+            }
+            timeHeld = Mathf.Clamp01(timeHeld + Time.deltaTime);
+            plateworldPosition.x += Input.GetAxis("Mouse X") * spongeCleaningMoveSpeed;
+            plateworldPosition.z += Input.GetAxis("Mouse Y") * spongeCleaningMoveSpeed;
+            plateworldPosition.x = Mathf.Clamp(plateworldPosition.x, -dishModelCollider.bounds.extents.x, dishModelCollider.bounds.extents.x);
+            plateworldPosition.z = Mathf.Clamp(plateworldPosition.z, -dishModelCollider.bounds.extents.z, dishModelCollider.bounds.extents.z);
+            plateworldPosition.y = 0f;
+            // TODO: Try out smooth damp here
+            sponge.position = Vector3.Lerp(sponge.position, dish.TransformPoint(plateworldPosition), timeHeld / 1f);
+            return;
+        }
 
         Ray ray = Camera.main.ScreenPointToRay(new Vector3(mousePosition.x, mousePosition.y, mousePosition.z));
         if (Physics.Raycast(ray, out RaycastHit hit, 10f, LayerMask.GetMask("Dish")))
         {
-            sponge.SetPositionAndRotation(hit.point, hit.transform.rotation);
+            sponge.rotation = hit.transform.rotation;
+
+            if (Input.GetMouseButton(0))
+            {
+                mouseLockedToPlate = true;
+                plateworldPosition = hit.transform.InverseTransformPoint(hit.point - sponge.position + hit.point);
+            }
+            else
+            {
+                sponge.position = hit.point + hit.transform.up * spongeHoverOffset;
+            }
         }
         else
         {
@@ -73,7 +110,7 @@ public class Washing : MonoBehaviour
 
         if (!grimeSpawned)
         {
-            for (int i = 0; i < 1000; i++)
+            for (int i = 0; i < grimeToSpawn; i++)
             {
                 GameObject grimule = Instantiate(grimePrefab, dish);
                 float radius = dishModelCollider.bounds.extents.x;
@@ -85,8 +122,7 @@ public class Washing : MonoBehaviour
                 Grime g = grimule.GetComponent<Grime>();
                 g.decrementCount = DecrementGrime;
             }
-
-            grimeCount = 1000;
+            grimeCount = grimeToSpawn;
             grimeSpawned = true;
         }
 
