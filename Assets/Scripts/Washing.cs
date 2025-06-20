@@ -18,8 +18,6 @@ public class Washing : MonoBehaviour
     private bool grimeSpawned;
     private bool spunchPickedUp;
     private float timeHeld;
-    private bool mouseLockedToPlate;
-    private Vector3 plateworldPosition;
     private Vector3 lastMousePosition;
     public float smoothTime = 0.3f;
     public float lookSpeed = 5f;
@@ -30,7 +28,6 @@ public class Washing : MonoBehaviour
         spongeDefaultRotation = sponge.transform.rotation;
         Cursor.visible = false;
         Cursor.lockState = CursorLockMode.Locked;
-        plateworldPosition = Vector3.zero;
     }
 
     void Update()
@@ -47,6 +44,8 @@ public class Washing : MonoBehaviour
                 spunchPickedUp = true;
                 Cursor.visible = false;
                 Cursor.lockState = CursorLockMode.Locked;
+                lastMousePosition = new Vector3(Screen.width / 2, Screen.height / 2);
+                sponge.rotation = dish.rotation;
             }
             return;
         }
@@ -54,50 +53,20 @@ public class Washing : MonoBehaviour
         Vector3 mousePosition = new Vector3(lastMousePosition.x + Input.GetAxis("Mouse X") * lookSpeed, lastMousePosition.y + Input.GetAxis("Mouse Y") * lookSpeed, 0f);
         mousePosition.x = Mathf.Clamp(mousePosition.x, 0, Screen.width);
         mousePosition.y = Mathf.Clamp(mousePosition.y, 0, Screen.height);
-
         lastMousePosition = mousePosition;
 
-        if (mouseLockedToPlate)
+        if (Input.GetMouseButton(0))
         {
-            if (!Input.GetMouseButton(0))
-            {
-                mouseLockedToPlate = false;
-                timeHeld = 0f;
-                lastMousePosition = Camera.main.WorldToScreenPoint(sponge.position);
-                return;
-            }
             timeHeld = Mathf.Clamp01(timeHeld + Time.deltaTime);
-            plateworldPosition.x += Input.GetAxis("Mouse X") * spongeCleaningMoveSpeed;
-            plateworldPosition.z += Input.GetAxis("Mouse Y") * spongeCleaningMoveSpeed;
-            plateworldPosition.x = Mathf.Clamp(plateworldPosition.x, -dishModelCollider.bounds.extents.x, dishModelCollider.bounds.extents.x);
-            plateworldPosition.z = Mathf.Clamp(plateworldPosition.z, -dishModelCollider.bounds.extents.z, dishModelCollider.bounds.extents.z);
-            plateworldPosition.y = 0f;
-            // TODO: Try out smooth damp here
-            sponge.position = Vector3.Lerp(sponge.position, dish.TransformPoint(plateworldPosition), timeHeld / 1f);
+            Vector3 newPosition = new Vector3(sponge.position.x + Input.GetAxis("Mouse X") * 0.01f, sponge.position.y + Input.GetAxis("Mouse Y") * 0.01f, sponge.position.z);
+            Vector3 offset = newPosition - dish.position;
+            sponge.position = dish.position + Vector3.ClampMagnitude(offset, dishModelCollider.bounds.extents.x);
+            sponge.position = Vector3.Lerp(sponge.position, dishModelCollider.ClosestPoint(sponge.position), timeHeld / 1f);
             return;
         }
 
-        Ray ray = Camera.main.ScreenPointToRay(new Vector3(mousePosition.x, mousePosition.y, mousePosition.z));
-        if (Physics.Raycast(ray, out RaycastHit hit, 10f, LayerMask.GetMask("Dish")))
-        {
-            sponge.rotation = hit.transform.rotation;
-
-            if (Input.GetMouseButton(0))
-            {
-                mouseLockedToPlate = true;
-                plateworldPosition = hit.transform.InverseTransformPoint(hit.point - sponge.position + hit.point);
-            }
-            else
-            {
-                sponge.position = hit.point + hit.transform.up * spongeHoverOffset;
-            }
-        }
-        else
-        {
-            sponge.transform.LookAt(Camera.main.transform.position, Vector3.up);
-            sponge.transform.Rotate(90f, 0f, 0f);
-            sponge.position = Camera.main.ScreenToWorldPoint(new Vector3(mousePosition.x, mousePosition.y, 1f));
-        }
+        timeHeld = Mathf.Clamp01(timeHeld - Time.deltaTime);
+        sponge.position = Camera.main.ScreenToWorldPoint(new Vector3(mousePosition.x, mousePosition.y, 1f));
     }
 
     public void BeginWashing(Player p)
@@ -106,7 +75,7 @@ public class Washing : MonoBehaviour
         Cursor.visible = true;
         Cursor.lockState = CursorLockMode.Confined;
         p.transform.SetPositionAndRotation(playerStandsHere.position, Quaternion.LookRotation(-transform.right));
-        p.head.transform.rotation = new Quaternion();
+        p.head.transform.rotation = Quaternion.Euler(26f, 0f, 0f);
 
         if (!grimeSpawned)
         {

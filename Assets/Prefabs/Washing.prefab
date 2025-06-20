@@ -292,7 +292,6 @@ GameObject:
   - component: {fileID: 7321953655605386070}
   - component: {fileID: 5065040786747589233}
   - component: {fileID: 79869208268167681}
-  - component: {fileID: 4077789674584064627}
   - component: {fileID: 4690206672478256367}
   m_Layer: 6
   m_Name: Model
@@ -366,27 +365,6 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!65 &4077789674584064627
-BoxCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7478827112961870777}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 0
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 3
-  m_Size: {x: 1.3, y: 2, z: 1.3}
-  m_Center: {x: 0.000000059604645, y: -0.0000076293945, z: -0.000000029802322}
 --- !u!64 &4690206672478256367
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -546,3 +524,9 @@ MonoBehaviour:
   playerStandsHere: {fileID: 2484261673801084074}
   grimePrefab: {fileID: 4187322392783127018, guid: 1ed08def9bda5d24c9d92df9a5ba9663, type: 3}
   dishModelCollider: {fileID: 4690206672478256367}
+  spongeHoverOffset: 0.1
+  grimeToSpawn: 100
+  spongeCleaningMoveSpeed: 0.02
+  smoothTime: 0.3
+  lookSpeed: 5
+  currentVelocity: {x: 0, y: 0, z: 0}
